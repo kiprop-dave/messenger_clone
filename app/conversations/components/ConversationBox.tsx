@@ -49,15 +49,19 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
       onClick={handleClick}
     >
       <Avatar user={otherUser} />
-      <div className="py-1 pl-1 w-full h-full rounded-md">
+      <div className="py-1 px-1 w-full h-full rounded-md overflow-hidden">
         <div className="flex items-center justify-between w-full">
           <p className="text-md font-medium">{conversation?.name || otherUser?.name}</p>
           <p className="text-sm text-gray-500">
-            {lastMessage && (new Date(lastMessage?.createdAt), "p")}
+            {lastMessage && format(new Date(lastMessage?.createdAt), "p")}
           </p>
         </div>
-        <div className="flex items-center justify-between w-full">
-          <p className="text-sm text-gray-500">{lastMessageText}</p>
+        <div className="flex items-center justify-between w-full overflow-hidden pr-2">
+          <div className="w-5/6">
+            <p className={clsx("text-sm text-gray-500 truncate", !hasSeen && "text-gray-700")}>
+              {lastMessageText}
+            </p>
+          </div>
           {!hasSeen && lastMessage && <div className="w-2 h-2 rounded-full bg-blue-500"></div>}
         </div>
       </div>
