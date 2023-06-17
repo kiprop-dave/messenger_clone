@@ -19,7 +19,7 @@ export default function ConversationList({ users, initialConvs }: ConversationLi
 
   const router = useRouter();
 
-  const { isOpen, converstionId } = useConverstion();
+  const { isOpen, conversationId } = useConverstion();
 
   return (
     <aside
@@ -31,7 +31,7 @@ export default function ConversationList({ users, initialConvs }: ConversationLi
       <div className="px-5 flex flex-col">
         <div className="my-2 flex items-center justify-between">
           <h3 className="text-2xl font-semibold text-gray-900">Messages</h3>
-          <div className='text-gray-600 cursor-pointer rounded-full hover:opacity-75 p-2 bg-gray-100'>
+          <div className="text-gray-600 cursor-pointer rounded-full hover:opacity-75 p-2 bg-gray-100">
             <MdOutlineGroupAdd />
           </div>
         </div>

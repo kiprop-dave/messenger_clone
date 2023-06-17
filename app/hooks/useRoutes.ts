@@ -8,7 +8,7 @@ import useConverstion from "./useConversation";
 const useRoutes = () => {
   const path = usePathname();
 
-  const { converstionId } = useConverstion();
+  const { conversationId } = useConverstion();
 
   const routes = useMemo(
     () => [
@@ -16,7 +16,7 @@ const useRoutes = () => {
         label: "Chat",
         href: "/conversations",
         icon: HiChat,
-        isActive: path === "/conversations" || !!converstionId,
+        isActive: path === "/conversations" || !!conversationId,
       },
       {
         label: "Users",
@@ -31,7 +31,7 @@ const useRoutes = () => {
         onClick: () => signOut(),
       },
     ],
-    [path, converstionId]
+    [path, conversationId]
   );
 
   return routes;
