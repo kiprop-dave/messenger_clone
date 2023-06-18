@@ -31,6 +31,7 @@ export default function Form(): JSX.Element {
   };
 
   const handleImageUpload = (result: any) => {
+    // Library doesn't provide types
     axios.post("/api/messages", {
       image: result?.info?.secure_url,
       conversationId,
