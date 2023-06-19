@@ -1,4 +1,5 @@
 import getConversationById from "@/app/actions/getConversationById";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 import getMessages from "@/app/actions/getMessages";
 import EmptyState from "@/app/components/EmptyState";
 import Header from "./components/Header";
@@ -12,6 +13,7 @@ interface Params {
 const ConversationId = async ({ params }: { params: Params }) => {
   const conversation = await getConversationById(params.conversationId);
   const messages = await getMessages(params.conversationId);
+  const currentUser = await getCurrentUser();
 
   if (!conversation) {
     return (
@@ -27,7 +29,7 @@ const ConversationId = async ({ params }: { params: Params }) => {
     <div className="lg:pl-80 h-full">
       <div className="flex flex-col h-full">
         <Header conversation={conversation} />
-        <Body initialMessages={messages} />
+        <Body initialMessages={messages} currentUser={currentUser} />
         <Form />
       </div>
     </div>

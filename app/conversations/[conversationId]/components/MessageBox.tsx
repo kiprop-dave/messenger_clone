@@ -35,7 +35,7 @@ export default function MessageBox({ message, isLastMessage }: MessageBoxProps):
       <div className={avatar}>{!isOwnMessage && <Avatar user={message.sender} />}</div>
       <div className={messageBodyContainer}>
         <div className="flex items-center gap-1">
-          <div className="text-sm text-gray-500">{message.sender.name}</div>
+          <div className="text-sm text-gray-500">{!isOwnMessage && message.sender.name}</div>
           <div className="text-xs text-gray-400">
             {format(new Date(message.createdAt), "dd/MM/yyyy HH:mm")}
           </div>

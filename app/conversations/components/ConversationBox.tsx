@@ -45,7 +45,7 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
     if (!lastMessage) return "";
     const timeSince = new Date().getTime() - new Date(lastMessage.createdAt).getTime();
     if (timeSince < 86400000) return format(new Date(lastMessage.createdAt), "p");
-    return format(new Date(lastMessage.createdAt), "dd/MM/yyyy HH:mm");
+    return format(new Date(lastMessage.createdAt), "dd/MM/yyyy");
   };
 
   return (
@@ -59,7 +59,7 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
       <div className="py-1 px-1 w-full h-full rounded-md overflow-hidden">
         <div className="flex items-center justify-between w-full">
           <p className="text-md font-medium">{conversation?.name || otherUser?.name}</p>
-          <p className="text-sm text-gray-500">{dateFormat()}</p>
+          <p className="text-xs text-gray-500">{dateFormat()}</p>
         </div>
         <div className="flex items-center justify-between w-full overflow-hidden pr-2">
           <div className="w-5/6">
