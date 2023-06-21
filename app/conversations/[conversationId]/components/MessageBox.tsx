@@ -6,6 +6,8 @@ import Image from "next/image";
 import { MessageType } from "@/app/types";
 import Avatar from "@/app/components/Avatar";
 import format from "date-fns/format";
+import ImageModal from "./ImageModal";
+import { useState } from "react";
 
 interface MessageBoxProps {
   message: MessageType;
@@ -13,6 +15,7 @@ interface MessageBoxProps {
 }
 
 export default function MessageBox({ message, isLastMessage }: MessageBoxProps): JSX.Element {
+  const [imageModalOpen, setImageModalOpen] = useState<boolean>(false);
   const session = useSession();
 
   const isOwnMessage = message?.sender?.email === session?.data?.user?.email;
@@ -31,32 +34,36 @@ export default function MessageBox({ message, isLastMessage }: MessageBoxProps):
   );
 
   return (
-    <div className={messageContainerClass}>
-      <div className={avatar}>{!isOwnMessage && <Avatar user={message.sender} />}</div>
-      <div className={messageBodyContainer}>
-        <div className="flex items-center gap-1">
-          <div className="text-sm text-gray-500">{!isOwnMessage && message.sender.name}</div>
-          <div className="text-xs text-gray-400">
-            {format(new Date(message.createdAt), "dd/MM/yyyy HH:mm")}
+    <>
+      <ImageModal src={message.image!} onClose={() => setImageModalOpen(false)} isOpen={imageModalOpen} />
+      <div className={messageContainerClass}>
+        <div className={avatar}>{!isOwnMessage && <Avatar user={message.sender} />}</div>
+        <div className={messageBodyContainer}>
+          <div className="flex items-center gap-1">
+            <div className="text-sm text-gray-500">{!isOwnMessage && message.sender.name}</div>
+            <div className="text-xs text-gray-400">
+              {format(new Date(message.createdAt), "dd/MM/yyyy HH:mm")}
+            </div>
           </div>
-        </div>
-        <div className={imageMessage}>
-          {message.image ? (
-            <Image
-              alt="image"
-              src={message.image}
-              height={250}
-              width={250}
-              className="cursor-pointer object-cover hover:scale-110 transition"
-            />
-          ) : (
-            <div>{message.body}</div>
+          <div className={imageMessage}>
+            {message.image ? (
+              <Image
+                alt="image"
+                src={message.image}
+                height={250}
+                width={250}
+                className="cursor-pointer object-cover hover:scale-110 transition"
+                onClick={() => setImageModalOpen(true)}
+              />
+            ) : (
+              <div>{message.body}</div>
+            )}
+          </div>
+          {isLastMessage && isOwnMessage && seenBy.length > 0 && (
+            <div className="text-xs text-gray-400 font-light">{`Seen by ${seenBy}`}</div>
           )}
         </div>
-        {isLastMessage && isOwnMessage && seenBy.length > 0 && (
-          <div className="text-xs text-gray-400 font-light">{`Seen by ${seenBy}`}</div>
-        )}
       </div>
-    </div>
+    </>
   );
 }

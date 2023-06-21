@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
+import AvatarGroup from "@/app/components/AvatarGroup";
 
 interface ConversationBoxProps {
   conversation: ConversationType;
@@ -55,7 +56,13 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
       )}
       onClick={handleClick}
     >
-      <Avatar user={otherUser} />
+      {
+        conversation.isGroup ? (
+          <AvatarGroup users={conversation.users} />
+        ) : (
+          <Avatar user={otherUser} />
+        )
+      }
       <div className="py-1 px-1 w-full h-full rounded-md overflow-hidden">
         <div className="flex items-center justify-between w-full">
           <p className="text-md font-medium">{conversation?.name || otherUser?.name}</p>

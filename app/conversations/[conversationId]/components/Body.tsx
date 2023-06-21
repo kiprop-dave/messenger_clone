@@ -30,7 +30,7 @@ export default function Body({ initialMessages, currentUser }: BodyProps): JSX.E
       {messages.map((msg, i) => (
         <MessageBox key={msg.id} message={msg} isLastMessage={i === messages.length - 1} />
       ))}
-      <div ref={latestMessageRef} className="pt-20" />
+      <div ref={latestMessageRef} className="pt-10" />
     </div>
   );
 }

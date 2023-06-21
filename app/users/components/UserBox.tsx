@@ -4,7 +4,7 @@ import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import axios from "axios";
-import Link from "next/link";
+import Loader from "@/app/components/modals/LoadingModal";
 import Avatar from "@/app/components/Avatar";
 
 interface UserBoxProps {
@@ -27,12 +27,17 @@ export default function UserBox({ user }: UserBoxProps) {
   }, [user, router]);
 
   return (
-    <div
-      className="flex items-center h-14 cursor-pointer space-x-3 p-3 hover:bg-neutral-100 transition"
-      onClick={handleClick}
-    >
-      <Avatar user={user} />
-      <p className="font-medium text-gray-900 text-sm">{user.name}</p>
-    </div>
+    <>
+      {
+        isLoading && <Loader />
+      }
+      <div
+        className="flex items-center h-14 cursor-pointer space-x-3 p-3 hover:bg-neutral-100 transition"
+        onClick={handleClick}
+      >
+        <Avatar user={user} />
+        <p className="font-medium text-gray-900 text-sm">{user.name}</p>
+      </div>
+    </>
   );
 }
