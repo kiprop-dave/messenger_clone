@@ -15,8 +15,6 @@ export default function DesktopSidebar({ currentUser }: DesktopSidebarProps) {
   const routes = useRoutes();
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
 
-  console.log(currentUser);
-
   return (
     <>
       <SettingsModal currentUser={currentUser} isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />

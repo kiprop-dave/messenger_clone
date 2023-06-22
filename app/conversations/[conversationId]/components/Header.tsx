@@ -9,6 +9,7 @@ import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import ProfileDrawer from "./ProfileDrawer";
 import AvatarGroup from "@/app/components/AvatarGroup";
+import useIsActive from "@/app/hooks/useIsActive";
 
 interface HeaderProps {
   conversation: Conversation & {
@@ -19,12 +20,12 @@ interface HeaderProps {
 export default function Header({ conversation }: HeaderProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const otherUser = useOtherUser(conversation);
-
+  const isActive = useIsActive(otherUser);
   const statusText = useMemo(() => {
     if (conversation.isGroup) return `${conversation.users.length} members`;
 
-    return "Active now"; // TODO: implement active status
-  }, [conversation]);
+    return isActive ? "Active now" : "offline";
+  }, [conversation, isActive]);
 
   return (
     <>
