@@ -33,7 +33,7 @@ export default function ConfirmModal({ isOpen, onClose }: ConfirmModalProps): JS
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <div className="sm:flex sm:items-start">
-          <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+          <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
             <FiAlertTriangle className="h-6 w-6 text-red-600" aria-hidden="true" />
           </div>
           <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
@@ -47,7 +47,7 @@ export default function ConfirmModal({ isOpen, onClose }: ConfirmModalProps): JS
             </div>
           </div>
         </div>
-        <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+        <div className="my-5 sm:my-4 flex items-center justify-evenly">
           <Button type="button" disabled={isLoading} danger onClick={onDelete}>
             Delete
           </Button>

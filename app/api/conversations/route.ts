@@ -1,19 +1,21 @@
 import getCurentUser from "@/app/actions/getCurrentUser";
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismaDb";
+import { pusherServer } from "@/app/libs/pusher";
 
 export async function POST(req: Request) {
   try {
     const currentUser = await getCurentUser();
-    const body = await req.json();
-    const { userId, isGroup, members, name } = body;
 
     if (!currentUser?.id || !currentUser?.email) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const body = await req.json();
+    const { userId, isGroup, members, name } = body;
+
     if (isGroup && (!members || members.length < 2 || !name)) {
-      return new NextResponse("Group must have members", { status: 400 });
+      return new NextResponse("Group must have more than 2 members and a name", { status: 400 });
     }
 
     if (isGroup) {
@@ -33,6 +35,12 @@ export async function POST(req: Request) {
         },
       });
 
+      // Update all the members of the new conversation
+      newConversation.users.forEach((user) => {
+        if (user.email) {
+          pusherServer.trigger(user.email, "conversation:new", newConversation);
+        }
+      })
       return NextResponse.json(newConversation);
     }
 
@@ -53,8 +61,10 @@ export async function POST(req: Request) {
       },
     });
 
-    if (existingConversations.length && existingConversations[0]) {
-      return NextResponse.json(existingConversations[0]);
+    const firstConversation = existingConversations.at(0);
+
+    if (firstConversation) {
+      return NextResponse.json(firstConversation);
     }
 
     const newConversation = await prisma.conversation.create({
@@ -74,6 +84,13 @@ export async function POST(req: Request) {
         users: true,
       },
     });
+
+    // Update both members of the conversation
+    newConversation.users.forEach((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, "conversation:new", newConversation);
+      }
+    })
 
     return NextResponse.json(newConversation);
   } catch (error) {

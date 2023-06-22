@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import clsx from "clsx";
 import { User } from "@prisma/client";
 import { MdOutlineGroupAdd } from "react-icons/md";
+import { pusherClient } from "@/app/libs/pusher";
 import useConverstion from "@/app/hooks/useConversation";
 import { ConversationType } from "@/app/types";
 import ConversationBox from "./ConversationBox";
@@ -16,12 +18,57 @@ interface ConversationListProps {
 }
 
 export default function ConversationList({ users, initialConvs }: ConversationListProps) {
-  const [conversations, setConversation] = useState(initialConvs);
+  const [conversations, setConversations] = useState(initialConvs);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const router = useRouter();
-
+  const session = useSession();
   const { isOpen, conversationId } = useConverstion();
 
+  const pusherChannel = useMemo(() => {
+    return session.data?.user?.email;
+  }, [session.data?.user?.email]);
+
+  useEffect(() => {
+    if (!pusherChannel) return;
+    pusherClient.subscribe(pusherChannel);
+
+    const newConversationHandler = (newConversation: ConversationType) => {
+      setConversations((prev) => {
+        if (prev.some((conv) => conv.id === newConversation.id)) return prev;
+        return [newConversation, ...prev];
+      })
+    };
+
+    const updatedMessageHandler = (updatedConversation: ConversationType) => {
+      setConversations((prev) => prev.map((conv) => {
+        if (conv.id === updatedConversation.id) {
+          return {
+            ...conv,
+            messages: updatedConversation.messages
+          }
+        }
+        return conv;
+      }))
+    };
+
+    const deleteConversationHandler = (deletedConversation: ConversationType) => {
+      setConversations((prev) => prev.filter((conv) => conv.id !== deletedConversation.id));
+      if (conversationId === deletedConversation.id) {
+        router.push("/conversations");
+      }
+    };
+
+    pusherClient.bind("conversation:new", newConversationHandler);
+    pusherClient.bind("conversation:updated", updatedMessageHandler);
+    pusherClient.bind("conversation:delete", deleteConversationHandler);
+
+    return () => {
+      pusherClient.unsubscribe(pusherChannel);
+      pusherClient.unbind("conversation:new", newConversationHandler);
+      pusherClient.unbind("conversation:updated", updatedMessageHandler);
+      pusherClient.unbind("conversation:delete", deleteConversationHandler);
+    }
+  }, [pusherChannel, router, conversationId]);
   return (
     <>
       <GroupChatModal users={users} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

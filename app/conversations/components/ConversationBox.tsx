@@ -22,7 +22,7 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
 
   const handleClick = useCallback(() => {
     router.push(`/conversations/${conversation.id}`);
-  }, [conversation.id, router]);
+  }, [conversation, router]);
 
   const lastMessage = useMemo(() => {
     const messages = conversation.messages || [];
@@ -31,9 +31,9 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
 
   const userEmail = useMemo(() => session.data?.user?.email, [session.data?.user?.email]);
 
-  const hasSeen = useMemo(() => {
+  const hasSeen: boolean = useMemo(() => {
     if (!lastMessage || !userEmail) return false;
-    return lastMessage.seen.some((user) => user.email === userEmail);
+    return lastMessage.seen.filter((user) => user.email === userEmail).length !== 0;
   }, [lastMessage, userEmail]);
 
   const lastMessageText = useMemo(() => {
@@ -52,7 +52,7 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
   return (
     <div
       className={clsx(
-        "relative flex items-center space-x-3 py-1 pl-1 hover:bg-neutral-100 rounded-lg cursor-pointer transition md:h-14 h-11"
+        "relative flex items-center space-x-3 py-1 pl-1 hover:bg-neutral-100 rounded-lg cursor-pointer transition md:h-14 h-14"
       )}
       onClick={handleClick}
     >
@@ -65,16 +65,22 @@ export default function ConversationBox({ conversation }: ConversationBoxProps) 
       }
       <div className="py-1 px-1 w-full h-full rounded-md overflow-hidden">
         <div className="flex items-center justify-between w-full">
-          <p className="text-md font-medium">{conversation?.name || otherUser?.name}</p>
+          <p className="text-md font-medium tracking-tight">{conversation?.name || otherUser?.name}</p>
           <p className="text-xs text-gray-500">{dateFormat()}</p>
         </div>
         <div className="flex items-center justify-between w-full overflow-hidden pr-2">
           <div className="w-5/6">
-            <p className={clsx("text-sm text-gray-500 truncate", !hasSeen && "text-gray-700")}>
+            <p
+              className={clsx(`
+              truncate 
+              text-sm
+              `,
+                hasSeen ? 'text-gray-500' : 'text-black font-medium'
+              )}>
               {lastMessageText}
             </p>
           </div>
-          {!hasSeen && lastMessage && <div className="w-2 h-2 rounded-full bg-blue-500"></div>}
+          {!hasSeen && <div className="w-2 h-2 rounded-full bg-blue-500"></div>}
         </div>
       </div>
     </div>

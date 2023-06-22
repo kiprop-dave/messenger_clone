@@ -22,12 +22,10 @@ export default function Form(): JSX.Element {
   });
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    setValue("message", "", { shouldValidate: true });
     axios
       .post("/api/messages", { ...data, conversationId })
-      .then(() => {
-        setValue("message", "", { shouldValidate: false });
-      })
-      .catch((error) => toast.error("Error sending message"));
+      .catch(() => toast.error("Error sending message"));
   };
 
   const handleImageUpload = (result: any) => {

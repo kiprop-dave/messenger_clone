@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismaDb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { pusherServer } from "@/app/libs/pusher";
 
 interface Params {
   conversationId: string;
@@ -38,10 +39,6 @@ export async function POST(req: Request, { params }: { params: Params }) {
       return NextResponse.json(conversation);
     }
 
-    if (lastMessage.seen.some((seen) => seen.id === currentUser.id)) {
-      return NextResponse.json(conversation);
-    }
-
     // Update the seen of the last message
 
     const updatedLastMessage = await prisma.message.update({
@@ -60,6 +57,16 @@ export async function POST(req: Request, { params }: { params: Params }) {
         sender: true,
       },
     });
+
+    // update conversation
+    await pusherServer.trigger(currentUser.email!, "conversation:updated", updatedLastMessage);
+
+    if (lastMessage.seen.some((seen) => seen.id === currentUser.id)) {
+      return NextResponse.json(conversation);
+    }
+
+    // update the seen status of the lastMessage
+    await pusherServer.trigger(conversationId, "messages:updated", updatedLastMessage);
 
     return new NextResponse("success");
   } catch (error) {
