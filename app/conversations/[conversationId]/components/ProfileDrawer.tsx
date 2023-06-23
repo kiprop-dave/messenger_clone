@@ -9,6 +9,7 @@ import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import ConfirmModal from "./ConfirmModal";
 import AvatarGroup from "@/app/components/AvatarGroup";
+import useIsActive from "@/app/hooks/useIsActive";
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -23,7 +24,7 @@ export default function ProfileDrawer(props: ProfileDrawerProps): JSX.Element {
   const otherUser = useOtherUser(conversation);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
-  const isActive = true; // Implement active status checking functionality
+  const isActive = useIsActive(otherUser);
 
   const joinedAt = useMemo(() => {
     if (conversation?.isGroup) return format(new Date(conversation.createdAt), "dd/MM/yyyy");
